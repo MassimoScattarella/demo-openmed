@@ -1,9 +1,10 @@
 version: "3.8"
 services:
+
   keycloak:
     image: jboss/keycloak
     ports:
-      - "8080:8080"
+      - 8080:8080
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
@@ -11,7 +12,16 @@ services:
     volumes:
       - "$PWD/config:/tmp/config"
     networks:
-      - keycloak_net
+      - keycloak-net
+      
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - keycloak-net
 
 networks:
-  keycloak_net:
+  keycloak-net:
