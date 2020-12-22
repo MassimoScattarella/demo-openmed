@@ -1,9 +1,21 @@
 version: "3.8"
 services:
 
+  keycloak-db-postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - $PWD/volumes/keycloak_db_postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-net
 
   keycloak:
-    image: jboss/keycloak
+    image: quay.io/keycloak/keycloak:latest
     ports:
       - 8080:8080
     environment:
@@ -12,10 +24,19 @@ services:
       KEYCLOAK_IMPORT: /tmp/config/openmed.json
       KEYCLOAK_WELCOME_THEME: openmed
       KEYCLOAK_DEFAULT_THEME: openmed
+      # KEYCLOAK_FRONTEND_URL: https://localhost:8080/keycloak/auth
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-db-postgres
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
     volumes:
       - "$PWD/config:/tmp/config"
-      - "$PWD/config/standalone-ha.xml:/opt/jboss/keycloak/standalone/configuration/standalone-ha.xml"
       - "$PWD/themes/openmed:/opt/jboss/keycloak/themes/openmed"
+      - "$PWD/config/standalone-ha.xml:/opt/jboss/keycloak/standalone/configuration/standalone-ha.xml"
+    depends_on: 
+      - keycloak-db-postgres
     networks:
       - keycloak-net
 
