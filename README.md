@@ -58,7 +58,7 @@
     ```
     ![connection](./images/connection.png)
 
-#### Configure Service, Route, Plugin
+#### Configure Service, Route, Plugin 
    
 1. Create service( modifica con url al servizio vero e name come si vuole)
    
@@ -69,20 +69,17 @@
     --data 'url=http://mockbin.org'
     ```
 
+2. Configurare il plugin oidc sul servizio che punta a keycloak
+    ```
+    curl -i -X POST http://localhost:8001/services/demo-fn-service/plugins \
+    --data name="oidc" \
+    --data config.discovery="http://localhost:8080/auth/realms/openmed/.well-known/openid-configuration" \
+    --data config.client_id="openmed_cleint" \
+    --data config.client_secret="84e4124c-abdb-4f3d-9e24-48de66e49cb7" \
+    --data config.realm="openmed"
+    ```
 
-```
-curl -i -X POST http://localhost:8001/services/demo-fn-service/plugins \
-  --data name="openid-connect"                                                                             \
-  --data config.issuer="https://YOUR_OKTA_DOMAIN/oauth2/YOUR_AUTH_SERVER/.well-known/openid-configuration" \
-  --data config.client_id="YOUR_CLIENT_ID"                                                                 \
-  --data config.client_secret="YOUR_CLIENT_SECRET"                                                         \
-  --data config.redirect_uri="https://kong.com/api"                                                        \
-  --data config.scopes="openid"                                                                            \
-  --data config.scopes="email"                                                                             \
-  --data config.scopes="profile"
-```
-
-2. Create route (nell'url metti il nome del servizio scelto precedentemente e negli hosts il dominio da cui viene chiamato il servizio, nella mia demo era `server.massimoscattarella.com`, e configura come meglio credi)
+3. Create route (nell'url metti il nome del servizio scelto precedentemente e negli hosts il dominio da cui viene chiamato il servizio, nella mia demo era `server.massimoscattarella.com`, e configura come meglio credi)
    
    ```
    curl -i -X POST \
@@ -93,3 +90,7 @@ curl -i -X POST http://localhost:8001/services/demo-fn-service/plugins \
     --data 'paths[]=/guestbook/entries' \
     --data 'methods[]=GET'
    ```
+
+4. A questo punto chiamando http://server.massimoscattarella.com/guestbook/entries interviene la rotta kong che chiama il service , ma il service ha il plugin configurato rimandando tutto a keycloak il quale fa il check o ti fa autenticare dopodiche effettivamente rimanda tutto al servizio che manda alla vera funzione.
+
+    *(tutto questo e solocome esempio, bisogna configurare correttamente i path e i domini per fare la vera prova, nel mio caso ho configurato anche i certs ssl su kong, se vuoi li mette nella folder kong/ssl e scommenti nel dockerfile KONG_SSL_CERT e KONG_SSL_CERT_KEY)*
