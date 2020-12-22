@@ -1,6 +1,7 @@
 version: "3.8"
 services:
 
+
   keycloak:
     image: jboss/keycloak
     ports:
@@ -9,17 +10,12 @@ services:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_IMPORT: /tmp/config/openmed.json
+      KEYCLOAK_WELCOME_THEME: openmed
+      KEYCLOAK_DEFAULT_THEME: openmed
     volumes:
       - "$PWD/config:/tmp/config"
-    networks:
-      - keycloak-net
-      
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
+      - "$PWD/config/standalone-ha.xml:/opt/jboss/keycloak/standalone/configuration/standalone-ha.xml"
+      - "$PWD/themes/openmed:/opt/jboss/keycloak/themes/openmed"
     networks:
       - keycloak-net
 
