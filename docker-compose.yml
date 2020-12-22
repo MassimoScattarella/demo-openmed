@@ -32,9 +32,9 @@ services:
       DB_DATABASE: keycloak
       DB_SCHEMA: public
     volumes:
-      - "$PWD/config:/tmp/config"
-      - "$PWD/themes/openmed:/opt/jboss/keycloak/themes/openmed"
-      - "$PWD/config/standalone-ha.xml:/opt/jboss/keycloak/standalone/configuration/standalone-ha.xml"
+      - "$PWD/keycloak/config:/tmp/config"
+      - "$PWD/keycloak/themes/openmed:/opt/jboss/keycloak/themes/openmed"
+      - "$PWD/keycloak/config/standalone-ha.xml:/opt/jboss/keycloak/standalone/configuration/standalone-ha.xml"
     depends_on: 
       - keycloak-db-postgres
     networks:
